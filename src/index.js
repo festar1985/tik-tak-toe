@@ -10,11 +10,17 @@ const Square = (props) => {
     );
   }
 
+const Reset = (props) => {
+  return (
+    <button  onClick={()=>props.onReset()}>
+      Reset Game
+    </button>
+  );
+} 
 
 const Board = (props) => {
   
-  
-      return (
+    return (
       <div>
         <div className="status"></div>
         <div className="board-row">
@@ -39,14 +45,18 @@ const Board = (props) => {
 
 const Game = () => {
 
-  const [gameHistory, SetGameHistory] = useState( Array( 9 ).fill( null ) )
+  const [ gameHistory, setGameHistory ] = useState([Array( 9 ).fill( null )]);
   const [ gameState, setGameState ] = useState( Array( 9 ).fill( null ) );
   const [ turnXState, setTurnXState ] = useState( true );
+  const [ currentMove, setCurrentMove ] = useState( 0 );
+  const [winnerState, setWinnerState ] = useState( false );
   
   const winner = calculateWinner( gameState )
   let status
   if ( winner ) {
+    
     status = "The winner is: " + winner;
+    
   } else {
     status = "Next player: " + ( turnXState ? "X" : "O" );
   }
@@ -54,19 +64,58 @@ const Game = () => {
   
   
   const handleClick = ( clickLocation ) => {
+    if ( gameState[ clickLocation ] !== null || winner !==null) {
+      return
+    }
     const squaresArray = gameState.slice()
+    const tempHistoryArray = gameHistory.slice()
     squaresArray[ clickLocation ] = turnXState ? "X" : "O"
     setGameState( squaresArray )
+    tempHistoryArray.push( squaresArray )
+    setGameHistory( tempHistoryArray )
     setTurnXState( !turnXState )
+    setCurrentMove(currentMove+1)
   }
+
+
+  const resetGame = () => {
+    setGameState( Array( 9 ).fill( null ) )
+    setGameHistory( [ Array( 9 ).fill( null ) ] )
+    setTurnXState(true)
+  }
+
+  const moves = gameHistory.map( ( move, moveIndex ) => {
+    
+    const description = "Go to move N:" +moveIndex
+
+    if ( moveIndex === 0 ) {
+        return null
+    }
+    else return (
+      <li key={ moveIndex }>
+        <button onClick={() => jumpTo(moveIndex)} >{description}</button>
+      </li>
+    )
+
+    })
+  
+  const jumpTo = (index) => {
+    setCurrentMove( index )
+    setTurnXState( ( index % 2 ? false : true ) )
+    setGameHistory( gameHistory.slice( 0, index + 1 ) )
+    setGameState(gameHistory[index])
+  }
+
   return (
       <div className="game">
         <div className="game-board">
         <Board gameState={ gameState } handleClick={handleClick} />
         </div>
         <div className="game-info">
-          <div>{status}</div>
-          <ol>{/* TODO */}</ol>
+        <div>{ status }</div>
+          <p>Return to a previous move:</p>
+        <ol>{moves}</ol>
+        <Reset onReset={resetGame}/>
         </div>
       </div>
     );
@@ -96,7 +145,8 @@ function calculateWinner(squares) {
   ];
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+    if ( squares[ a ] && squares[ a ] === squares[ b ] && squares[ a ] === squares[ c ] ) {
+      
       return squares[a];
     }
   }
