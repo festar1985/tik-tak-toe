@@ -12,7 +12,7 @@ const Square = (props) => {
 
 const Reset = (props) => {
   return (
-    <button  onClick={()=>props.onReset()}>
+    <button className="button" onClick={()=>props.onReset()}>
       Reset Game
     </button>
   );
@@ -49,15 +49,13 @@ const Game = () => {
   const [ gameState, setGameState ] = useState( Array( 9 ).fill( null ) );
   const [ turnXState, setTurnXState ] = useState( true );
   const [ currentMove, setCurrentMove ] = useState( 0 );
-  const [winnerState, setWinnerState ] = useState( false );
+  const [ winnerState, setWinnerState ] = useState( false );
   
   const winner = calculateWinner( gameState )
   let status
   if ( winner ) {
-    
     status = "The winner is: " + winner;
-    
-  } else {
+    } else {
     status = "Next player: " + ( turnXState ? "X" : "O" );
   }
   
@@ -81,6 +79,7 @@ const Game = () => {
   const resetGame = () => {
     setGameState( Array( 9 ).fill( null ) )
     setGameHistory( [ Array( 9 ).fill( null ) ] )
+    setCurrentMove(0)
     setTurnXState(true)
   }
 
@@ -93,7 +92,7 @@ const Game = () => {
     }
     else return (
       <li key={ moveIndex }>
-        <button onClick={() => jumpTo(moveIndex)} >{description}</button>
+        <button className="button" onClick={() => jumpTo(moveIndex)} >{description}</button>
       </li>
     )
 
@@ -128,6 +127,7 @@ const Game = () => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    <h1 className="header">Tic-Tac-Toe</h1>
     <Game />
   </React.StrictMode>
 );
