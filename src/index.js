@@ -51,18 +51,22 @@ const Game = () => {
   const [ currentMove, setCurrentMove ] = useState( 0 );
   const [ winnerState, setWinnerState ] = useState( false );
   
-  const winner = calculateWinner( gameState )
+  if ( !winnerState ) { calculateWinner( gameState, setWinnerState ) }
+  
   let status
-  if ( winner ) {
-    status = "The winner is: " + winner;
-    } else {
+
+  if ( winnerState ) {
+    status = "The winner is: " + winnerState;
+  } else if ( currentMove === 9 ) {
+    status = " It is a tie no one wins"
+  }else {
     status = "Next player: " + ( turnXState ? "X" : "O" );
   }
   
   
   
   const handleClick = ( clickLocation ) => {
-    if ( gameState[ clickLocation ] !== null || winner !==null) {
+    if ( gameState[ clickLocation ] !== null || winnerState !==false) {
       return
     }
     const squaresArray = gameState.slice()
@@ -80,7 +84,8 @@ const Game = () => {
     setGameState( Array( 9 ).fill( null ) )
     setGameHistory( [ Array( 9 ).fill( null ) ] )
     setCurrentMove(0)
-    setTurnXState(true)
+    setTurnXState( true )
+    setWinnerState(false)
   }
 
   const moves = gameHistory.map( ( move, moveIndex ) => {
@@ -102,7 +107,8 @@ const Game = () => {
     setCurrentMove( index )
     setTurnXState( ( index % 2 ? false : true ) )
     setGameHistory( gameHistory.slice( 0, index + 1 ) )
-    setGameState(gameHistory[index])
+    setGameState( gameHistory[ index ] )
+    setWinnerState(false)
   }
 
   return (
@@ -132,7 +138,7 @@ root.render(
   </React.StrictMode>
 );
 
-function calculateWinner(squares) {
+function calculateWinner(squares,setWinnerState) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -146,8 +152,8 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if ( squares[ a ] && squares[ a ] === squares[ b ] && squares[ a ] === squares[ c ] ) {
-      
-      return squares[a];
+      setWinnerState(squares[a])
+      return ;
     }
   }
   return null;

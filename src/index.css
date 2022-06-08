@@ -81,7 +81,7 @@ ol, ul {
 }
 
 .game {
-  margin: 100px;
+  margin: 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
